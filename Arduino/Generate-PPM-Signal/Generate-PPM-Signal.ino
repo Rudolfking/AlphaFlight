@@ -13,9 +13,10 @@
 /*this array holds the servo values for the ppm signal
  change theese values in your code (usually servo values move between 1000 and 2000)*/
 int ppm[chanel_number];
-int current[];
-int next[];
+int current[4];
+int next[4];
 int oldMillis;
+int incomingByte = 0;
 
 void setup(){  
   //initiallize default ppm values
@@ -40,11 +41,22 @@ void setup(){
 }
 
 void loop(){
-  //put main code here
-  if (Serial.available() > 0) {
-                // read the incoming byte:
-                incomingByte = Serial.read();
+  readSerial();
+  if (incomingByte == 255){
+    readArray();
+  }
+  current[3] -= millis()-oldMillis;
+  oldMillis = millis();
+}
 
+void readArray(){
+  
+  }
+
+void readSerial(){
+  if (Serial.available() > 0) {
+                incomingByte = Serial.read();
+  }
 }
 
 ISR(TIMER1_COMPA_vect){  //leave this alone
