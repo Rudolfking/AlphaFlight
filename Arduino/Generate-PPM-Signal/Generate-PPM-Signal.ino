@@ -1,7 +1,7 @@
 //this programm will put out a PPM signal
 
 //////////////////////CONFIGURATION///////////////////////////////
-#define chanel_number 8  //set the number of chanels
+#define chanel_number 4  //set the number of chanels
 #define default_servo_value 1500  //set the default servo value
 #define PPM_FrLen 22500  //set the PPM frame length in microseconds (1ms = 1000µs)
 #define PPM_PulseLen 300  //set the pulse length
@@ -13,6 +13,9 @@
 /*this array holds the servo values for the ppm signal
  change theese values in your code (usually servo values move between 1000 and 2000)*/
 int ppm[chanel_number];
+int current[];
+int next[];
+int oldMillis;
 
 void setup(){  
   //initiallize default ppm values
@@ -22,6 +25,8 @@ void setup(){
 
   pinMode(sigPin, OUTPUT);
   digitalWrite(sigPin, !onState);  //set the PPM signal pin to the default state (off)
+
+  Serial.begin(9600);
   
   cli();
   TCCR1A = 0; // set entire TCCR1 register to 0
@@ -36,12 +41,10 @@ void setup(){
 
 void loop(){
   //put main code here
-  static int val = 1;
-  
-  ppm[0] = ppm[0] + val;
-  if(ppm[0] >= 2000){ val = -1; }
-  if(ppm[0] <= 1000){ val = 1; }
-  delay(10);
+  if (Serial.available() > 0) {
+                // read the incoming byte:
+                incomingByte = Serial.read();
+
 }
 
 ISR(TIMER1_COMPA_vect){  //leave this alone
