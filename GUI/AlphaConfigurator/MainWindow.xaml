@@ -1,0 +1,30 @@
+﻿<Window x:Class="AlphaConfigurator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AlphaConfigurator"
+        mc:Ignorable="d"
+        Title="AlphaConfigurator" Height="350" Width="650" MaxWidth="650" MaxHeight="350">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+            <ComboBox x:Name="comCombo" Width="100" ItemsSource="{Binding AvailableComPorts}" />
+            <ComboBox x:Name="baudCombo" Width="100" ItemsSource="{Binding AvailableBaudRates}" />
+            <Button x:Name="openPort" Content="Open" Width="70" Click="Button_Click" />
+            <TextBox x:Name="testTextBox" Text="Enter sample data here" Width="150" MaxWidth="150" />
+            <Button x:Name="testWrite" Content="Write" Width="70" Click="testWrite_Click" />
+            <Button x:Name="testWriteLine" Content="WriteLine" Width="70" Click="testWriteLine_Click" />
+        </StackPanel>
+        <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsReadOnly="True" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                 x:Name="logField" Height="100" MaxHeight="100" />
+    </Grid>
+</Window>
