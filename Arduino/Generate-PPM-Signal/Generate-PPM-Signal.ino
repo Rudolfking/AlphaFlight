@@ -1,5 +1,4 @@
-//this programm will put out a PPM signal
-
+#include <stdlib.h>
 //////////////////////CONFIGURATION///////////////////////////////
 #define chanel_number 4  //set the number of chanels
 #define default_servo_value 1500  //set the default servo value
@@ -10,24 +9,27 @@
 //////////////////////////////////////////////////////////////////
 
 
-/*this array holds the servo values for the ppm signal
- change theese values in your code (usually servo values move between 1000 and 2000)*/
+
 int ppm[chanel_number];
 int current[4];
 int next[4];
 int oldMillis;
+
 int incomingByte = 0;
+String inputString;
 
 void setup(){  
-  //initiallize default ppm values
   for(int i=0; i<chanel_number; i++){
     ppm[i]= default_servo_value;
   }
+
+  ppm[2] = 1500;
 
   pinMode(sigPin, OUTPUT);
   digitalWrite(sigPin, !onState);  //set the PPM signal pin to the default state (off)
 
   Serial.begin(9600);
+  Serial.setTimeout(20);
   
   cli();
   TCCR1A = 0; // set entire TCCR1 register to 0
@@ -45,18 +47,60 @@ void loop(){
   if (incomingByte == 255){
     readArray();
   }
+  ppm[0] = current[0];
+  ppm[1] = current[1];
+  ppm[3] = current[3];
   current[3] -= millis()-oldMillis;
   oldMillis = millis();
+  if (current[3] == 0 || current [3] > 30000){
+      for (int i=0; i<4; i++){
+          current[i] = next[i];
+        }
+    }
 }
 
 void readArray(){
-  
+    
   }
 
 void readSerial(){
   if (Serial.available() > 0) {
-                incomingByte = Serial.read();
+    //incomingByte = Serial.read();
+    inputString = Serial.readString();
   }
+}
+/*
+
+void splitCommand(String text, char splitChar) {
+    char** temp;
+    int index = -1;
+    int index2;
+    char splitChar = ",";
+
+    for(temp = strsep(text, splitChar); temp; temp = strsep(null, splitChar)) {
+        Serial.println(temp);
+    }
+
+    for(int i = 0; i < 3; i++) {
+        Serial.println(command[i]);
+    }
+}
+*/
+
+String getValue(String data, char separator, int index) {
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++){
+    if(data.charAt(i)==separator || i==maxIndex){
+        found++;
+        strIndex[0] = strIndex[1]+1;
+        strIndex[1] = (i == maxIndex) ? i+1 : i;
+    }
+  }
+
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
 ISR(TIMER1_COMPA_vect){  //leave this alone
