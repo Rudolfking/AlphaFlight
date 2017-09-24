@@ -1,4 +1,3 @@
-#include <stdlib.h>
 //////////////////////CONFIGURATION///////////////////////////////
 #define chanel_number 4  //set the number of chanels
 #define default_servo_value 1500  //set the default servo value
@@ -8,28 +7,28 @@
 #define sigPin 10  //set PPM signal output pin on the arduino
 //////////////////////////////////////////////////////////////////
 
-
-
 int ppm[chanel_number];
 int current[4];
 int next[4];
 int oldMillis;
 
 int incomingByte = 0;
-String inputString;
+String incomingString;
 
 void setup(){  
   for(int i=0; i<chanel_number; i++){
     ppm[i]= default_servo_value;
   }
-
+  
   ppm[2] = 1500;
 
+  pinMode(13, OUTPUT);
   pinMode(sigPin, OUTPUT);
   digitalWrite(sigPin, !onState);  //set the PPM signal pin to the default state (off)
+  digitalWrite(13, LOW);
 
   Serial.begin(9600);
-  Serial.setTimeout(20);
+  Serial.setTimeout(50);
   
   cli();
   TCCR1A = 0; // set entire TCCR1 register to 0
@@ -43,47 +42,44 @@ void setup(){
 }
 
 void loop(){
-  readSerial();
-  if (incomingByte == 255){
-    readArray();
-  }
-  ppm[0] = current[0];
-  ppm[1] = current[1];
-  ppm[3] = current[3];
   current[3] -= millis()-oldMillis;
   oldMillis = millis();
   if (current[3] == 0 || current [3] > 30000){
       for (int i=0; i<4; i++){
           current[i] = next[i];
+          ppm[0] = current[0];
+          ppm[1] = current[1];
+          ppm[3] = current[3];
         }
     }
 }
 
-void readArray(){
-    
+void serialEvent(){
+  if (Serial.available() > 0){
+    incomingString = Serial.readString();
   }
+  if (getValue(incomingString, ',', 4)=="z" && incomingString.endsWith("z")){
+      digitalWrite(13, HIGH);
+      Serial.println("OK");
+      processData();
+    } else {
+        digitalWrite(13, LOW);
+        Serial.println("UNAUTHERIZED");
+      }
+}
 
+void processData(){
+  int temp;
+  for (int i=0; i<4; i++){
+      next[i] = getValue(incomingString, ',', i).toInt();
+  }
+  }
+/*
 void readSerial(){
   if (Serial.available() > 0) {
     //incomingByte = Serial.read();
     inputString = Serial.readString();
   }
-}
-/*
-
-void splitCommand(String text, char splitChar) {
-    char** temp;
-    int index = -1;
-    int index2;
-    char splitChar = ",";
-
-    for(temp = strsep(text, splitChar); temp; temp = strsep(null, splitChar)) {
-        Serial.println(temp);
-    }
-
-    for(int i = 0; i < 3; i++) {
-        Serial.println(command[i]);
-    }
 }
 */
 
