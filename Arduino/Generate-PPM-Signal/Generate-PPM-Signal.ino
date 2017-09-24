@@ -15,7 +15,7 @@ int oldMillis;
 int incomingByte = 0;
 String incomingString;
 bool rcSysIsFutaba = false;
-bool debugMode = true;
+bool debugMode = false;
 
 void setup(){  
   for(int i=0; i<chanel_number; i++){
@@ -61,6 +61,7 @@ void loop(){
           ppm[3] = current[2];
         }
     }
+    Serial.println("");
     Serial.print(ppm[0]);
     Serial.print("  |  ");
     Serial.print(ppm[1]);
@@ -72,8 +73,6 @@ void loop(){
       Serial.print("  |  ");
       Serial.print(current[3]);
     }
-    
-    Serial.println("");
 }
 
 void serialEvent(){
@@ -82,11 +81,17 @@ void serialEvent(){
   }
   if (getValue(incomingString, ',', 4)=="z" && incomingString.endsWith("z")){
       digitalWrite(13, HIGH);
-      Serial.println("OK");
+      Serial.println("");
+      Serial.println("");
+      Serial.print("OK");
+      Serial.println("");
       processData();
     } else {
         digitalWrite(13, LOW);
-        Serial.println("UNAUTHERIZED");
+        Serial.println("");
+        Serial.println("");
+        Serial.print("UNAUTHERIZED");
+        Serial.println("");
       }
 }
 
@@ -95,6 +100,19 @@ void processData(){
   for (int i=0; i<4; i++){
       next[i] = getValue(incomingString, ',', i).toInt();
   }
+  Serial.println("");
+  Serial.print("Outputting ");
+  Serial.print(next[0]);
+  Serial.print(" roll ");
+  Serial.print(next[1]);
+  Serial.print(" pitch and ");
+  Serial.print(next[2]);
+  Serial.print(" yaw for ");
+  Serial.print(next[3]);
+  Serial.print(" milliseconds in ");
+  Serial.print(current[3]);
+  Serial.print(" milliseconds");
+  Serial.println("");
   }
 
 
