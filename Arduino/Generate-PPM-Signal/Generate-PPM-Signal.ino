@@ -15,6 +15,7 @@ int oldMillis;
 int incomingByte = 0;
 String incomingString;
 bool rcSysIsFutaba = false;
+bool debugMode = true;
 
 void setup(){  
   for(int i=0; i<chanel_number; i++){
@@ -52,12 +53,12 @@ void setup(){
 void loop(){
   current[3] -= millis()-oldMillis;
   oldMillis = millis();
-  if (current[3] == 0 || current [3] > 30000){
+  if (current[3] < 1 || current [3] > 30000){
       for (int i=0; i<4; i++){
           current[i] = next[i];
           ppm[0] = current[0];
           ppm[1] = current[1];
-          ppm[3] = current[3];
+          ppm[3] = current[2];
         }
     }
     Serial.print(ppm[0]);
@@ -67,6 +68,10 @@ void loop(){
     Serial.print(ppm[2]);
     Serial.print("  |  ");
     Serial.print(ppm[3]);
+    if (debugMode){
+      Serial.print("  |  ");
+      Serial.print(current[3]);
+    }
     
     Serial.println("");
 }
