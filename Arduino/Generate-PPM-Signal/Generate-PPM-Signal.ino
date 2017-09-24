@@ -14,13 +14,21 @@ int oldMillis;
 
 int incomingByte = 0;
 String incomingString;
+bool rcSysIsFutaba = false;
 
 void setup(){  
   for(int i=0; i<chanel_number; i++){
     ppm[i]= default_servo_value;
   }
+
+  for (int i=0;i<3;i++){
+    current[i] = default_servo_value;
+    next[i] = default_servo_value;
+    }
   
   ppm[2] = 1500;
+  current[3] = 300;
+  next[3]= 300;
 
   pinMode(13, OUTPUT);
   pinMode(sigPin, OUTPUT);
@@ -52,6 +60,15 @@ void loop(){
           ppm[3] = current[3];
         }
     }
+    Serial.print(ppm[0]);
+    Serial.print("  |  ");
+    Serial.print(ppm[1]);
+    Serial.print("  |  ");
+    Serial.print(ppm[2]);
+    Serial.print("  |  ");
+    Serial.print(ppm[3]);
+    
+    Serial.println("");
 }
 
 void serialEvent(){
@@ -74,14 +91,7 @@ void processData(){
       next[i] = getValue(incomingString, ',', i).toInt();
   }
   }
-/*
-void readSerial(){
-  if (Serial.available() > 0) {
-    //incomingByte = Serial.read();
-    inputString = Serial.readString();
-  }
-}
-*/
+
 
 String getValue(String data, char separator, int index) {
   int found = 0;
