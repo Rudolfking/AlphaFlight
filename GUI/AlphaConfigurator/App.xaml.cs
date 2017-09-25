@@ -22,7 +22,7 @@ namespace AlphaConfigurator
 
         public void Log(string logMessage)
         {
-            Dispatcher.Invoke((Action)(() =>
+            Dispatcher.BeginInvoke((Action)(() =>
             {
                 if (MainWindow != null)
                 {

@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AlphaConfigurator"
         mc:Ignorable="d"
-        Title="AlphaConfigurator" Height="350" Width="650" MaxWidth="650" MaxHeight="350">
+        Title="AlphaConfigurator" Height="350" Width="700" MaxWidth="700">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -21,11 +22,15 @@
             <ComboBox x:Name="baudCombo" Width="100" ItemsSource="{Binding AvailableBaudRates}" />
             <Button x:Name="openPort" Content="Open" Width="70" Click="Button_Click" />
             <Button x:Name="closePort" Content="Close" Width="70" Click="closePort_Click" />
-            <TextBox x:Name="testTextBox" Text="Enter sample data here" Width="150" MaxWidth="150" />
+            <TextBox x:Name="testTextBox" Text="1800,1200,1000,03000,z" Width="150" MaxWidth="150" />
             <Button x:Name="testWrite" Content="Write" Width="70" Click="testWrite_Click" />
             <Button x:Name="testWriteLine" Content="WriteLine" Width="70" Click="testWriteLine_Click" />
         </StackPanel>
         <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsReadOnly="True" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                 x:Name="logField" Height="100" MaxHeight="100" />
+                 x:Name="logField" ScrollViewer.VerticalScrollBarVisibility="Visible" />
+        <StackPanel Orientation="Horizontal" Grid.Row="3" VerticalAlignment="Center">
+            <CheckBox Content="Enable auto scroll" IsChecked="{Binding IsAutoScroll, Mode=TwoWay}" Margin="5" VerticalAlignment="Center" />
+            <Button x:Name="flushButton" Content="Clear" Width="70" Margin="5" Click="flushButton_Click" VerticalAlignment="Center" />
+        </StackPanel>
     </Grid>
 </Window>

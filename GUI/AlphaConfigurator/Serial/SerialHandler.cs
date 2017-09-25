@@ -69,7 +69,7 @@ namespace AlphaConfigurator.Serial
                 }
                 catch (Exception e)
                 {
-                    App.Current.Log("Read threw exception: " + e.Message);
+                    App.Current?.Log("Read threw exception: " + e.Message);
                 }
             }
         }

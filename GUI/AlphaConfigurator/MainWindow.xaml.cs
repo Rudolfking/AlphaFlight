@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,21 +47,33 @@ namespace AlphaConfigurator
         {
             if (AvailableComPorts?.Count > 0)
             {
-                comCombo.SelectedIndex = 0;
+                comCombo.SelectedIndex = AvailableComPorts.Count - 1;
             }
             if (AvailableBaudRates?.Count > 9)
             {
-                baudCombo.SelectedIndex = 9;
+                baudCombo.SelectedIndex = 3;
             }
         }
 
         public ObservableCollection<string> AvailableComPorts { get; set; }
         public ObservableCollection<string> AvailableBaudRates { get; set; }
 
+        public bool IsAutoScroll { get; set; } = true;
+
         public void Log(string log)
         {
-            this.logField.AppendText(DateTime.Now+ ": "+ log + Environment.NewLine);
-            this.logField.ScrollToEnd();
+            var time = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff",
+                                            CultureInfo.InvariantCulture);
+            this.logField.AppendText(time + ": "+ log + (isEnded(log) ? "" : Environment.NewLine));
+            if (IsAutoScroll)
+                this.logField.ScrollToEnd();
+        }
+
+        private bool isEnded(string log)
+        {
+            if (log.EndsWith("\r") || log.EndsWith("\n") || log.EndsWith("\r\n") || log.EndsWith(Environment.NewLine))
+                return true;
+            return false;
         }
 
         private SerialHandler ourPort = null;
@@ -110,6 +123,11 @@ namespace AlphaConfigurator
             {
                 ourPort.SendDataLine(testTextBox.Text);
             }
+        }
+
+        private void flushButton_Click(object sender, RoutedEventArgs e)
+        {
+            logField.Text = "";
         }
     }
 }
