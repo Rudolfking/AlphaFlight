@@ -32,3 +32,5 @@
 
 # folders
 .vs
+AlphaConfigurator/obj
+/AlphaConfigurator/obj/
