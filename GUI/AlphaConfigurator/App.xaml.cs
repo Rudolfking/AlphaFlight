@@ -22,13 +22,13 @@ namespace AlphaConfigurator
 
         public void Log(string logMessage)
         {
-            if (MainWindow != null)
+            Dispatcher.Invoke((Action)(() =>
             {
-                Dispatcher.Invoke((Action)(() =>
+                if (MainWindow != null)
                 {
                     (MainWindow as MainWindow).Log(logMessage);
-                }));
-            }
+                }
+            }));
         }
     }
 }

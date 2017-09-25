@@ -12,7 +12,9 @@ namespace AlphaConfigurator.Serial
         private string originalPortName;
         private int originalBaud;
 
+        Task readTask;
         SerialPort port = null;
+        bool canRead = true;
         /// <summary>
         /// Creates a new alphaflight serial port handler. Needs port name and baud. Creates but NOT opens the port.
         /// Call Open after creation.
@@ -22,6 +24,9 @@ namespace AlphaConfigurator.Serial
         public SerialHandler(string portName, int baud)
         {
             port = new SerialPort(portName, baud);
+            port.ReadTimeout = 500;
+            port.WriteTimeout = 500;
+
             originalPortName = portName;
             originalBaud = baud;
         }
@@ -36,6 +41,12 @@ namespace AlphaConfigurator.Serial
                 if (!port.IsOpen)
                     port.Open();
                 App.Current.Log("Port is open.");
+
+                readTask = new Task(() =>
+                {
+                    Read();
+                });
+                readTask.Start();
             }
             catch (Exception e)
             {
@@ -43,6 +54,25 @@ namespace AlphaConfigurator.Serial
             }
         }
 
+        public void Read()
+        {
+            while (canRead)
+            {
+                try
+                {
+                    string message = port.ReadLine();
+                    App.Current.Log("[READLN ]: " + message);
+                }
+                catch (TimeoutException)
+                {
+                    App.Current.Log("Timeouted reading.");
+                }
+                catch (Exception e)
+                {
+                    App.Current.Log("Read threw exception: " + e.Message);
+                }
+            }
+        }
 
         public bool SendData(string data)
         {
@@ -51,7 +81,7 @@ namespace AlphaConfigurator.Serial
             try
             {
                 port.Write(data);
-                App.Current.Log("[WRITELN]: " + data);
+                App.Current.Log("[WRITE  ]: " + data);
                 return true;
             }
             catch (Exception e)
@@ -69,7 +99,7 @@ namespace AlphaConfigurator.Serial
             try
             {
                 port.WriteLine(data);
-                App.Current.Log("[WRITE  ]: " + data);
+                App.Current.Log("[WRITELN]: " + data);
                 return true;
             }
             catch (Exception e)
@@ -85,6 +115,12 @@ namespace AlphaConfigurator.Serial
             if (disposed)
                 return;
             disposed = true;
+            canRead = false;
+            try
+            {
+                readTask.Wait();
+            }
+            catch { }
             try
             {
                 port.Close();

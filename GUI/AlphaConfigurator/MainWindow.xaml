@@ -20,7 +20,7 @@
             <ComboBox x:Name="comCombo" Width="100" ItemsSource="{Binding AvailableComPorts}" />
             <ComboBox x:Name="baudCombo" Width="100" ItemsSource="{Binding AvailableBaudRates}" />
             <Button x:Name="openPort" Content="Open" Width="70" Click="Button_Click" />
-            <Button x:Name="closePort" Content="Open" Width="70" Click="closePort_Click" />
+            <Button x:Name="closePort" Content="Close" Width="70" Click="closePort_Click" />
             <TextBox x:Name="testTextBox" Text="Enter sample data here" Width="150" MaxWidth="150" />
             <Button x:Name="testWrite" Content="Write" Width="70" Click="testWrite_Click" />
             <Button x:Name="testWriteLine" Content="WriteLine" Width="70" Click="testWriteLine_Click" />
