@@ -71,6 +71,27 @@ namespace AlphaConfigurator
             ourPort.Open();
         }
 
+        private void closePort_Click(object sender, RoutedEventArgs e)
+        {
+            if (ourPort == null)
+                MessageBox.Show("Port is not open!");
+            else
+            {
+                try
+                {
+                    ourPort.Dispose();
+                    ourPort = null;
+                    Log("Port closed");
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show("Failed to close port: " + ex.Message);
+                    Log("Failed to close port: " + ex.Message);
+                }
+            }
+        }
+
         private void testWrite_Click(object sender, RoutedEventArgs e)
         {
             if (ourPort == null)
