@@ -65,7 +65,7 @@ namespace AlphaConfigurator.Serial
                 }
                 catch (TimeoutException)
                 {
-                    App.Current.Log("Timeouted reading.");
+                    //App.Current.Log("Timeouted reading.");
                 }
                 catch (Exception e)
                 {
