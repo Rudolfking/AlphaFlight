@@ -51,7 +51,7 @@ namespace AlphaConfigurator.Serial
             try
             {
                 port.Write(data);
-                App.Current.Log("Written '" + data + "' to serial port.");
+                App.Current.Log("[WRITELN]: " + data);
                 return true;
             }
             catch (Exception e)
@@ -69,7 +69,7 @@ namespace AlphaConfigurator.Serial
             try
             {
                 port.WriteLine(data);
-                App.Current.Log("Written '" + data + "' to serial port.");
+                App.Current.Log("[WRITE  ]: " + data);
                 return true;
             }
             catch (Exception e)

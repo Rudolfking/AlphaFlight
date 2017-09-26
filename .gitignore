@@ -25,7 +25,12 @@
 *.la
 *.a
 *.lib
+*.pdb
 
 # Executables
 *.out
 *.app
+
+# folders
+.vs
+GUI/AlphaConfigurator/obj/
