@@ -74,6 +74,9 @@ void loop(){
           }
       }
   }
+  if (current[3] < 0){
+    current[3] = 10;
+    }
     
     if (debugMode){
       Serial.println("");
