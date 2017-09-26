@@ -16,6 +16,7 @@ int incomingByte = 0;
 String incomingString;
 bool rcSysIsFutaba = false;
 bool debugMode = false;
+bool nextIsAvailable = false;
 
 void setup(){  
   for(int i=0; i<chanel_number; i++){
@@ -53,6 +54,7 @@ void loop(){
   current[3] -= millis()-oldMillis;
   oldMillis = millis();
   if (current[3] < 1 || current [3] > 30000){
+    if (nextIsAvailable == true){
       for (int i=0; i<4; i++){
           current[i] = next[i];
       }
@@ -62,10 +64,16 @@ void loop(){
       ppm[3] = current[2];
       
       for (int i=0; i<3; i++){
-        next[i] = 1500;
+        next[i] = default_servo_value;
       }
       next[3] = 10;
-    }
+      nextIsAvailable = false;
+    } else {
+        for (int i = 0;i<4;i++){
+          ppm[i] = default_servo_value;
+          }
+      }
+  }
     
     if (debugMode){
       Serial.println("");
@@ -118,6 +126,7 @@ void processData(){
   for (int i=0; i<4; i++){
       next[i] = getValue(incomingString, ',', i).toInt();
   }
+  nextIsAvailable = true;
   Serial.println("");
   Serial.print("Outputting ");
   Serial.print(next[0]);
