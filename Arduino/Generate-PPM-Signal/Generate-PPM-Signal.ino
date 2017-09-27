@@ -16,6 +16,7 @@ int incomingByte = 0;
 String incomingString;
 bool rcSysIsFutaba = false;
 bool debugMode = false;
+bool nextIsAvailable = false;
 
 void setup(){  
   for(int i=0; i<chanel_number; i++){
@@ -26,10 +27,9 @@ void setup(){
     current[i] = default_servo_value;
     next[i] = default_servo_value;
     }
-  
   ppm[2] = 1500;
-  current[3] = 300;
-  next[3]= 300;
+  current[3] = 10;
+  next[3]= 10;
 
   pinMode(13, OUTPUT);
   pinMode(sigPin, OUTPUT);
@@ -54,22 +54,39 @@ void loop(){
   current[3] -= millis()-oldMillis;
   oldMillis = millis();
   if (current[3] < 1 || current [3] > 30000){
+    if (nextIsAvailable == true){
       for (int i=0; i<4; i++){
           current[i] = next[i];
-          ppm[0] = current[0];
-          ppm[1] = current[1];
-          ppm[3] = current[2];
-        }
+      }
+      
+      ppm[0] = current[0];
+      ppm[1] = current[1];
+      ppm[3] = current[2];
+      
+      for (int i=0; i<3; i++){
+        next[i] = default_servo_value;
+      }
+      next[3] = 10;
+      nextIsAvailable = false;
+    } else {
+        for (int i = 0;i<4;i++){
+          ppm[i] = default_servo_value;
+          }
+      }
+  }
+  if (current[3] < 0){
+    current[3] = 10;
     }
-    Serial.println("");
-    Serial.print(ppm[0]);
-    Serial.print("  |  ");
-    Serial.print(ppm[1]);
-    Serial.print("  |  ");
-    Serial.print(ppm[2]);
-    Serial.print("  |  ");
-    Serial.print(ppm[3]);
+    
     if (debugMode){
+      Serial.println("");
+      Serial.print(ppm[0]);
+      Serial.print("  |  ");
+      Serial.print(ppm[1]);
+      Serial.print("  |  ");
+      Serial.print(ppm[2]);
+      Serial.print("  |  ");
+      Serial.print(ppm[3]);
       Serial.print("  |  ");
       Serial.print(current[3]);
     }
@@ -86,13 +103,25 @@ void serialEvent(){
       Serial.print("OK");
       Serial.println("");
       processData();
-    } else {
-        digitalWrite(13, LOW);
-        Serial.println("");
-        Serial.println("");
-        Serial.print("UNAUTHERIZED");
-        Serial.println("");
-      }
+    } else if (incomingString == "d") {
+        if (debugMode == true){
+          debugMode = false;
+          Serial.println("");
+          Serial.println("Debug mode turned off");
+          Serial.println("");
+          } else {
+              debugMode = true;
+              Serial.println("");
+              Serial.println("Debug mode turned on");
+              Serial.println("");
+            }
+      } else {
+          digitalWrite(13, LOW);
+          Serial.println("");
+          Serial.println("");
+          Serial.print("UNAUTHERIZED");
+          Serial.println("");
+        }
 }
 
 void processData(){
@@ -100,6 +129,7 @@ void processData(){
   for (int i=0; i<4; i++){
       next[i] = getValue(incomingString, ',', i).toInt();
   }
+  nextIsAvailable = true;
   Serial.println("");
   Serial.print("Outputting ");
   Serial.print(next[0]);
