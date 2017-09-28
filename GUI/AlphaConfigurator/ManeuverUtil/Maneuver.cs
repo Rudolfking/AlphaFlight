@@ -128,5 +128,16 @@ namespace AlphaConfigurator.ManeuverUtil
         {
             uids = newUid;
         }
+
+        internal string GetPrettyMovementsText()
+        {
+            var ret = "";
+            foreach (var item in this.Movements)
+            {
+                ret += item.GetInSerialFormat().Replace(',', ' ');
+                ret += Environment.NewLine;
+            }
+            return ret;
+        }
     }
 }

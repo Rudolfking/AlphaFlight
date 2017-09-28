@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AlphaConfigurator"
         xmlns:ManeuverUtil="clr-namespace:AlphaConfigurator.ManeuverUtil"
-        mc:Ignorable="d"
-        Title="AlphaConfigurator" Height="350" Width="700" MaxWidth="700">
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="AlphaConfigurator" Height="600" MinHeight="400" Width="1000" MinWidth="700">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -31,24 +31,50 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Track" Grid.Column="0" Margin="0 2 0 0" HorizontalAlignment="Center" VerticalAlignment="Top" />
-            <TextBlock Text="Maneuvers" Grid.Column="1" Margin="0 2 0 0" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <TextBlock Text="Track" Grid.Column="0" Margin="0 2 0 0" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="18" />
+            <TextBlock Text="Maneuvers" Grid.Column="1" Margin="0 2 0 0" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="18" />
 
-            <ListBox Grid.Column="0" Margin="0 20 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding ManeuverTrack}">
-                <ListBox.Resources>
-                    <DataTemplate DataType="{x:Type local:ManeuverReference}">
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding GuiText}" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                <!--<Button Content="Move up" x:Name="upBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                                <Button Content="Move down" x:Name="downBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />-->
-                                <Button Content="Delete" Click="trackDeleteBtn_Click" x:Name="trackDeleteBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                            </StackPanel>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.Resources>
-            </ListBox>
-            <ListBox Grid.Column="1" Margin="0 20 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Maneuvers}">
+            <Grid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ListBox Grid.Row="0" Margin="0 25 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding ManeuverTrack}"
+                         HorizontalContentAlignment="Stretch">
+                    <ListBox.Resources>
+                        <DataTemplate DataType="{x:Type ManeuverUtil:ManeuverReference}">
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.Style>
+                                    <Style TargetType="{x:Type Grid}">
+                                        <Setter Property="Background" Value="White" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                                                <Setter Property="Background" Value="LightGoldenrodYellow" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding GuiText}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                        <!--<Button Content="Move up" x:Name="upBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
+                                    <Button Content="Move down" x:Name="downBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />-->
+                                        <Button Content="Delete" Click="trackDeleteBtn_Click" x:Name="trackDeleteBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.Resources>
+                </ListBox>
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <Button Content="Save track" Click="saveTrackBtn_Click" x:Name="saveTrackBtn" Padding="10 0" Height="30" />
+                    <Button Content="Load track" Click="loadTrackBtn_Click" x:Name="loadTrackBtn" Padding="10 0" Height="30" />
+                    <TextBox x:Name="saveLoadTrackName" Text="savedTrack1.txt" Height="30" Width="90" VerticalContentAlignment="Center" />
+                </StackPanel>
+            </Grid>
+            
+            <ListBox Grid.Column="1" Margin="0 25 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Maneuvers}"
+                     SelectionChanged="ListBox_SelectionChanged">
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type ManeuverUtil:Maneuver}">
                         <StackPanel Orientation="Horizontal">
@@ -64,10 +90,15 @@
                 </ListBox.Resources>
             </ListBox>
             <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                <Button Grid.Column="2" Content="Add Maneuver" x:Name="addMan" Click="addMan_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Left" />
-                <Button Grid.Column="2" Content="Send to copter" x:Name="sendCommands" Click="sendCommands_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Left" />
-                <Button Grid.Column="2" Content="Save maneuvers" x:Name="saveManeuvers" Click="saveManeuvers_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Left" />
-                <Button Grid.Column="2" Content="Load maneuvers" x:Name="loadManeuvers" Click="loadManeuvers_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <Button Grid.Column="2" Content="Add Maneuver" x:Name="addMan" Click="addMan_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+                <Button Grid.Column="2" Content="Save maneuvers" x:Name="saveManeuvers" Click="saveManeuvers_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+                <Button Grid.Column="2" Content="Load maneuvers" x:Name="loadManeuvers" Click="loadManeuvers_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+                <TextBox x:Name="saveLoadFileName" Text="savedMan1.txt" Height="30" VerticalContentAlignment="Center" />
+                <Button Grid.Column="2" Margin="0 20 0 0" Content="Send to copter" x:Name="sendCommands" Click="sendCommands_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                        Background="LightGreen" />
+                <Button Grid.Column="2" Margin="0 5 0 0" Content="Cancel all commands" x:Name="cancelCommands" Click="cancelCommands_Click" Height="20" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                        Background="PaleVioletRed" />
+                <TextBlock Margin="0 10 0 0" Text="Select maneuver..." x:Name="selectedInfo" />
             </StackPanel>
         </Grid>
         

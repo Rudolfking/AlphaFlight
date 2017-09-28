@@ -138,24 +138,72 @@ namespace AlphaConfigurator
                 Log("---------------- Sending data to copter! ------------------");
                 Task.Run(() =>
                 {
-                    var toSendArray = ManeuverTrack.ToArray();
-                    var ppmList = new List<Movement>();
-                    foreach (var item in toSendArray)
+                    try
                     {
-                        var man = Maneuvers.First(x => x.Uid == item.UidReference);
-                        ppmList.AddRange(man.Movements);
+                        var toSendArray = ManeuverTrack.ToArray();
+                        var ppmList = new List<Tuple<ManeuverReference, Movement>>();
+                        foreach (var item in toSendArray)
+                        {
+                            var man = Maneuvers.First(x => x.Uid == item.UidReference);
+                            ppmList.AddRange(man.Movements.Select(x=>new Tuple<ManeuverReference, Movement>(item, x)));
+                        }
+                        foreach (var item in ppmList)
+                        {
+                            if (cancelled)
+                                break;
+                            item.Item1.IsHighlighted = true;
+                            tryRefresh();
+                            ourPort.SendData(item.Item2.GetInSerialFormat());
+                            Thread.Sleep(item.Item2.TimeMs);
+                            item.Item1.IsHighlighted = false;
+                            tryRefresh();
+                        }
                     }
-                    foreach (var item in ppmList)
+                    catch (Exception ex)
                     {
-                        ourPort.SendData(item.GetInSerialFormat());
-                        Thread.Sleep(item.TimeMs);
+                        Dispatcher.BeginInvoke((Action)(() =>
+                        {
+                            Log("EXCEPTION sending data to copter! Reason: " + ex.Message);
+                            Log("Sending data to copter halted!");
+                        }));
                     }
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        Log("-------XXX------ Data sent to copter! --------XXX------");
+                        if (cancelled)
+                        {
+                            cancelled = false;
+                            Log("XXXXXXXXXXXX --- Data sending cancelled --- XXXXXXXXXXX");
+                        }
+                        else
+                        {
+                            Log("-------XXX------ Data sent to copter! --------XXX------");
+                        }
                     }));                    
                 });
             }
+        }
+
+        private bool cancelled = false;
+        private void cancelCommands_Click(object sender, RoutedEventArgs e)
+        {
+            cancelled = true;
+        }
+
+        private void tryRefresh()
+        {
+            try
+            {
+                Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    try
+                    {
+                        CollectionViewSource.GetDefaultView(Maneuvers).Refresh();
+                        CollectionViewSource.GetDefaultView(ManeuverTrack).Refresh();
+                    }
+                    catch { }
+                }));
+            }
+            catch { }
         }
 
         private void flushButton_Click(object sender, RoutedEventArgs e)
@@ -169,7 +217,10 @@ namespace AlphaConfigurator
 
         private void addMan_Click(object sender, RoutedEventArgs e)
         {
-            var wind = new MovementConfigurator();
+            var wind = new MovementConfigurator()
+            {
+                Owner = this,
+            };
             var theManover = new Maneuver("Movement X");
             wind.DataContext = theManover;
             var res = wind.ShowDialog();
@@ -189,6 +240,7 @@ namespace AlphaConfigurator
         {
             var dc = (sender as Button)?.DataContext as Maneuver;
             var newManeuver = new Maneuver(dc); // "copy constructor"
+            Maneuvers.Add(newManeuver);
         }
 
         private void editBtn_Click(object sender, RoutedEventArgs e)
@@ -212,8 +264,7 @@ namespace AlphaConfigurator
             {
                 Maneuvers[oldInd] = oldDc;
             }
-            CollectionViewSource.GetDefaultView(Maneuvers).Refresh();
-            CollectionViewSource.GetDefaultView(ManeuverTrack).Refresh();
+            tryRefresh();
         }
 
         private void addToTrackBtn_Click(object sender, RoutedEventArgs e)
@@ -232,12 +283,12 @@ namespace AlphaConfigurator
         private void saveManeuvers_Click(object sender, RoutedEventArgs e)
         {
             var ser = JsonConvert.SerializeObject(this.Maneuvers);
-            File.WriteAllText("savedMan.txt", ser);
+            File.WriteAllText(saveLoadFileName.Text, ser);
         }
 
         private void loadManeuvers_Click(object sender, RoutedEventArgs e)
         {
-            var deser = File.ReadAllText("savedMan.txt");
+            var deser = File.ReadAllText(saveLoadFileName.Text);
             var man = JsonConvert.DeserializeObject<ObservableCollection<Maneuver>>(deser);
             var newUid = -1;
             foreach (var item in man)
@@ -249,55 +300,52 @@ namespace AlphaConfigurator
             Maneuver.UpdateUid(newUid);
             foreach (var item in man)
             {
+                foreach (var mov in item.Movements)
+                {
+                    mov.Host = item;
+                }
                 this.Maneuvers.Add(item);
             }
-            CollectionViewSource.GetDefaultView(Maneuvers).Refresh();
-            CollectionViewSource.GetDefaultView(ManeuverTrack).Refresh();
+            tryRefresh();
         }
-    }
 
-    public class ManeuverReference
-    {
-        public int UidReference { get; set; }
-
-        private static int myUid = 500000;
-        public int MyUid { get; private set; }
-
-        public string GuiText
+        private void saveTrackBtn_Click(object sender, RoutedEventArgs e)
         {
-            get
+            var ser = JsonConvert.SerializeObject(this.ManeuverTrack);
+            File.WriteAllText(saveLoadTrackName.Text, ser);
+        }
+
+        private void loadTrackBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var deser = File.ReadAllText(saveLoadTrackName.Text);
+            var man = JsonConvert.DeserializeObject<ObservableCollection<ManeuverReference>>(deser);
+            var newUid = -1;
+            foreach (var item in man)
             {
-                var dc = theHost.Maneuvers.FirstOrDefault(x => x.Uid == UidReference);
-                if (dc == null)
-                    return "##### UNAUTHORIZED #####";
-                return dc.Name;
+                if (newUid < item.MyUid)
+                    newUid = item.MyUid;
             }
+            newUid++;
+            ManeuverReference.UpdateUid(newUid);
+            foreach (var item in man)
+            {
+                item.TheHost = this;
+                this.ManeuverTrack.Add(item);
+            }
+            tryRefresh();
         }
 
-        private MainWindow theHost;
-
-        public ManeuverReference(int uid, MainWindow host)
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MyUid = myUid++;
-            theHost = host;
-            UidReference = uid;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is ManeuverReference))
-                return false;
-            var other = obj as ManeuverReference;
-
-            if (other.MyUid != MyUid)
-                return false;
-
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            return MyUid.GetHashCode();
+            var selectedItem = (sender as ListBox)?.SelectedItem as Maneuver;
+            if (selectedItem == null)
+            {
+                selectedInfo.Text = "";
+                return;
+            }
+            var text = "Yaw  Pitch  Roll  Time" + Environment.NewLine; 
+            text += selectedItem.GetPrettyMovementsText();
+            selectedInfo.Text = text;
         }
     }
 }

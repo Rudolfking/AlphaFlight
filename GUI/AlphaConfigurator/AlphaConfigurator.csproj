@@ -64,6 +64,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ManeuverUtil\Maneuver.cs" />
+    <Compile Include="ManeuverUtil\ManeuverReference.cs" />
     <Compile Include="ManeuverUtil\Movement.cs" />
     <Compile Include="MovementConfigurator.xaml.cs">
       <DependentUpon>MovementConfigurator.xaml</DependentUpon>

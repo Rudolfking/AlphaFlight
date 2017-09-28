@@ -1,0 +1,1 @@
+[{"UidReference":1,"MyUid":500000,"GuiText":"Elore OK"},{"UidReference":1,"MyUid":500001,"GuiText":"Elore OK"},{"UidReference":2,"MyUid":500002,"GuiText":"Jobbra"},{"UidReference":1,"MyUid":500003,"GuiText":"Elore OK"},{"UidReference":3,"MyUid":500004,"GuiText":"Balra"},{"UidReference":1,"MyUid":500005,"GuiText":"Elore OK"}]
