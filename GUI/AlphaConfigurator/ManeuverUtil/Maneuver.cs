@@ -34,21 +34,27 @@ namespace AlphaConfigurator.ManeuverUtil
 
         public Maneuver()
         {
-
+            initCommands();
         }
 
-        public Maneuver(Maneuver copy)
+        public Maneuver(Maneuver copy, bool isDuplicate)
         {
             Uid = uids++;
 
-            Name = copy.Name + "- Copy";
+            if (isDuplicate)
+                Name = copy.Name + "- Copy";
+            else
+                Name = copy.Name;
             Movement[] target = new Movement[copy.Movements.Count];
             copy.Movements.CopyTo(target, 0);
             this.Movements = new ObservableCollection<Movement>();
             foreach (var item in target)
             {
+                item.Host = this;
                 Movements.Add(item);
             }
+
+            initCommands();
         }
 
         public Maneuver(string name)
@@ -57,6 +63,11 @@ namespace AlphaConfigurator.ManeuverUtil
 
             Name = name;
 
+            initCommands();
+        }
+
+        private void initCommands()
+        {
             AddCommand = new DelegateCommand(delegate (object arg)
             {
                 var man = arg as Movement;
@@ -116,14 +127,6 @@ namespace AlphaConfigurator.ManeuverUtil
             return true;
         }
 
-        public override int GetHashCode()
-        {
-            var hashCode = -1121205505;
-            hashCode = hashCode * -1521134295 + EqualityComparer<ObservableCollection<Movement>>.Default.GetHashCode(Movements);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
-            return hashCode + Uid.GetHashCode();
-        }
-
         internal static void UpdateUid(int newUid)
         {
             uids = newUid;
@@ -138,6 +141,11 @@ namespace AlphaConfigurator.ManeuverUtil
                 ret += Environment.NewLine;
             }
             return ret;
+        }
+
+        public override int GetHashCode()
+        {
+            return -1737426059 + Uid.GetHashCode();
         }
     }
 }

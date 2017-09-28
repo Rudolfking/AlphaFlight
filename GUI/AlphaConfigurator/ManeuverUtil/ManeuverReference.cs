@@ -64,7 +64,7 @@ namespace AlphaConfigurator.ManeuverUtil
 
         public override int GetHashCode()
         {
-            return MyUid.GetHashCode();
+            return 1960568823 + MyUid.GetHashCode();
         }
     }
 }

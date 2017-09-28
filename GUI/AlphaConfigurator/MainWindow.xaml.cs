@@ -239,30 +239,41 @@ namespace AlphaConfigurator
         private void duplicateBtn_Click(object sender, RoutedEventArgs e)
         {
             var dc = (sender as Button)?.DataContext as Maneuver;
-            var newManeuver = new Maneuver(dc); // "copy constructor"
+            var newManeuver = new Maneuver(dc, true); // "copy constructor"
             Maneuvers.Add(newManeuver);
         }
 
         private void editBtn_Click(object sender, RoutedEventArgs e)
         {
+            //var dc = (sender as Button)?.DataContext as Maneuver;
+            //var oldInd = -1;
+            //for (int i = 0; i < Maneuvers.Count; i++)
+            //{
+            //    if (Maneuvers[i] == dc)
+            //    {
+            //        oldInd = i;
+            //        break;
+            //    }
+            //}
+            //var oldDc = new Maneuver(dc);
+            //var wind = new MovementConfigurator();
+            //var theManover = dc;
+            //wind.DataContext = theManover;
+
             var dc = (sender as Button)?.DataContext as Maneuver;
-            var oldInd = -1;
-            for (int i = 0; i < Maneuvers.Count; i++)
+            var toEdit = new Maneuver(dc, false);
+            var wind = new MovementConfigurator()
             {
-                if (Maneuvers[i] == dc)
-                {
-                    oldInd = i;
-                    break;
-                }
-            }
-            var oldDc = new Maneuver(dc);
-            var wind = new MovementConfigurator();
-            var theManover = dc;
-            wind.DataContext = theManover;
+                Owner = this,
+            };
+            wind.DataContext = toEdit;
+
             var res = wind.ShowDialog();
-            if (res != true)
+            if (res == true)
             {
-                Maneuvers[oldInd] = oldDc;
+                // edit original DC
+                dc.Movements = toEdit.Movements;
+                dc.Name = toEdit.Name;
             }
             tryRefresh();
         }
@@ -288,6 +299,11 @@ namespace AlphaConfigurator
 
         private void loadManeuvers_Click(object sender, RoutedEventArgs e)
         {
+            if (!File.Exists(saveLoadFileName.Text))
+            {
+                MessageBox.Show("File named '" + saveLoadFileName.Text + "' does not exist!");
+                return;
+            }
             var deser = File.ReadAllText(saveLoadFileName.Text);
             var man = JsonConvert.DeserializeObject<ObservableCollection<Maneuver>>(deser);
             var newUid = -1;
@@ -317,6 +333,11 @@ namespace AlphaConfigurator
 
         private void loadTrackBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (!File.Exists(saveLoadFileName.Text))
+            {
+                MessageBox.Show("File named '" + saveLoadTrackName.Text + "' does not exist!");
+                return;
+            }
             var deser = File.ReadAllText(saveLoadTrackName.Text);
             var man = JsonConvert.DeserializeObject<ObservableCollection<ManeuverReference>>(deser);
             var newUid = -1;
