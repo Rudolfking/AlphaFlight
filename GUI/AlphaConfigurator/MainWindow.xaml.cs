@@ -1,9 +1,11 @@
 ﻿using AlphaConfigurator.ManeuverUtil;
 using AlphaConfigurator.Serial;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -225,6 +227,32 @@ namespace AlphaConfigurator
         {
             var dc = (sender as Button)?.DataContext as ManeuverReference;
             ManeuverTrack.Remove(dc);
+        }
+
+        private void saveManeuvers_Click(object sender, RoutedEventArgs e)
+        {
+            var ser = JsonConvert.SerializeObject(this.Maneuvers);
+            File.WriteAllText("savedMan.txt", ser);
+        }
+
+        private void loadManeuvers_Click(object sender, RoutedEventArgs e)
+        {
+            var deser = File.ReadAllText("savedMan.txt");
+            var man = JsonConvert.DeserializeObject<ObservableCollection<Maneuver>>(deser);
+            var newUid = -1;
+            foreach (var item in man)
+            {
+                if (newUid < item.Uid)
+                    newUid = item.Uid;
+            }
+            newUid++;
+            Maneuver.UpdateUid(newUid);
+            foreach (var item in man)
+            {
+                this.Maneuvers.Add(item);
+            }
+            CollectionViewSource.GetDefaultView(Maneuvers).Refresh();
+            CollectionViewSource.GetDefaultView(ManeuverTrack).Refresh();
         }
     }
 

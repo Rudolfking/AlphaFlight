@@ -32,7 +32,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Track" Grid.Column="0" Margin="0 2 0 0" HorizontalAlignment="Center" VerticalAlignment="Top" />
-            <TextBlock Text="Movements" Grid.Column="1" Margin="0 2 0 0" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <TextBlock Text="Maneuvers" Grid.Column="1" Margin="0 2 0 0" HorizontalAlignment="Center" VerticalAlignment="Top" />
 
             <ListBox Grid.Column="0" Margin="0 20 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding ManeuverTrack}">
                 <ListBox.Resources>
@@ -66,6 +66,8 @@
             <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                 <Button Grid.Column="2" Content="Add Maneuver" x:Name="addMan" Click="addMan_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Left" />
                 <Button Grid.Column="2" Content="Send to copter" x:Name="sendCommands" Click="sendCommands_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <Button Grid.Column="2" Content="Save maneuvers" x:Name="saveManeuvers" Click="saveManeuvers_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <Button Grid.Column="2" Content="Load maneuvers" x:Name="loadManeuvers" Click="loadManeuvers_Click" Height="30" Padding="20 0" VerticalAlignment="Top" HorizontalAlignment="Left" />
             </StackPanel>
         </Grid>
         

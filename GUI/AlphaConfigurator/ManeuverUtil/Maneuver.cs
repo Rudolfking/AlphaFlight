@@ -1,4 +1,5 @@
 ﻿using AlphaConfigurator.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,18 +12,30 @@ namespace AlphaConfigurator.ManeuverUtil
 {
     public class Maneuver
     {
+        [JsonProperty("Movements")]
         public ObservableCollection<Movement> Movements { get; set; } = new ObservableCollection<Movement>();
 
+        [JsonProperty("Name")]
         public string Name { get; set; }
 
+        [JsonIgnore]
         public ICommand AddCommand { get; set; }
 
+        [JsonIgnore]
         public ICommand RemoveCommand { get; set; }
+        [JsonIgnore]
         public ICommand MoveUpCommand { get; set; }
+        [JsonIgnore]
         public ICommand MoveDownCommand { get; set; }
 
         private static int uids = 1;
+        [JsonProperty("Uid")]
         public int Uid { get; private set; }
+
+        public Maneuver()
+        {
+
+        }
 
         public Maneuver(Maneuver copy)
         {
@@ -109,6 +122,11 @@ namespace AlphaConfigurator.ManeuverUtil
             hashCode = hashCode * -1521134295 + EqualityComparer<ObservableCollection<Movement>>.Default.GetHashCode(Movements);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             return hashCode + Uid.GetHashCode();
+        }
+
+        internal static void UpdateUid(int newUid)
+        {
+            uids = newUid;
         }
     }
 }

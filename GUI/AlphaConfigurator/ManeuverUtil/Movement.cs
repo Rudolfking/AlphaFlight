@@ -1,4 +1,5 @@
 ﻿using AlphaConfigurator.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,14 @@ namespace AlphaConfigurator.ManeuverUtil
 {
     public class Movement
     {
+        [JsonProperty("Yaw")]
         public int Yaw { get; set; }
+        [JsonProperty("Pitch")]
         public int Pitch { get; set; }
+        [JsonProperty("Roll")]
         public int Roll { get; set; }
 
+        [JsonProperty("TimeMs")]
         public int TimeMs { get; set; }
 
         public string GetInSerialFormat()
@@ -21,11 +26,28 @@ namespace AlphaConfigurator.ManeuverUtil
             return Roll.ZeroesUp(4) + "," + Pitch.ZeroesUp(4) + "," + Yaw.ZeroesUp(4) + "," + TimeMs.ZeroesUp(5) + "," + "z";
         }
 
+        [JsonIgnore]
         public Maneuver Host { get; set; }
+        [JsonProperty("HostUid")]
+        public int HostUid
+        {
+            get
+            {
+                return Host.Uid;
+            }
+        }
 
+        [JsonIgnore]
         public ICommand RemoveCommand { get; set; }
+        [JsonIgnore]
         public ICommand MoveUpCommand { get; set; }
+        [JsonIgnore]
         public ICommand MoveDownCommand { get; set; }
+
+        public Movement()
+        {
+
+        }
 
         public Movement(int yaw, int pitch, int roll, int time, Maneuver host)
         {
