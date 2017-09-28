@@ -40,7 +40,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <ListBox Grid.Row="0" Margin="0 25 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding ManeuverTrack}"
-                         HorizontalContentAlignment="Stretch">
+                         x:Name="maneuverTrackList" HorizontalContentAlignment="Stretch">
                     <ListBox.Resources>
                         <DataTemplate DataType="{x:Type ManeuverUtil:ManeuverReference}">
                             <Grid HorizontalAlignment="Stretch">
@@ -54,13 +54,13 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Style>
-                                <StackPanel Orientation="Horizontal">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding GuiText}" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                        <!--<Button Content="Move up" x:Name="upBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                                    <Button Content="Move down" x:Name="downBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />-->
-                                        <Button Content="Delete" Click="trackDeleteBtn_Click" x:Name="trackDeleteBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                                    </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBlock Text="{Binding GuiText}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="Move up" x:Name="upBtn" Click="upBtn_Click" Padding="5 0" Height="20" Margin="20 0 0 0" />
+                                    <Button Content="Move down" x:Name="downBtn" Click="downBtn_Click" Padding="5 0" Height="20" Margin="20 0 0 0" />
+                                    <Button Content="Delete" Click="trackDeleteBtn_Click" x:Name="trackDeleteBtn" Padding="5 0" Height="20" Margin="20 0 20 0" />
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
@@ -74,18 +74,20 @@
             </Grid>
             
             <ListBox Grid.Column="1" Margin="0 25 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding Maneuvers}"
-                     SelectionChanged="ListBox_SelectionChanged">
+                     SelectionChanged="ListBox_SelectionChanged" HorizontalContentAlignment="Stretch">
                 <ListBox.Resources>
                     <DataTemplate DataType="{x:Type ManeuverUtil:Maneuver}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                            <Button Content="Add to track!" Click="addToTrackBtn_Click" x:Name="addToTrackBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                            <Button Content="Edit" Click="editBtn_Click" x:Name="editBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                            <!--<Button Content="Move up" x:Name="upBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                            <Button Content="Move down" x:Name="downBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />-->
-                            <Button Content="Duplicate" Click="duplicateBtn_Click" x:Name="duplicateBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                            <Button Content="Delete" Click="deleteBtn_Click" x:Name="deleteBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
-                        </StackPanel>
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Add to track!" Click="addToTrackBtn_Click" x:Name="addToTrackBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
+                                <Button Content="Edit" Click="editBtn_Click" x:Name="editBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
+                                <Button Content="Duplicate" Click="duplicateBtn_Click" x:Name="duplicateBtn" Padding="5 0" Height="20" Margin="20 0 0 0" />
+                                <Button Content="Delete" Click="deleteBtn_Click" x:Name="deleteBtn" Padding="5 0" Height="20" Margin="20 0 20 0" />
+                            </StackPanel>
+                        </Grid>
                     </DataTemplate>
                 </ListBox.Resources>
             </ListBox>

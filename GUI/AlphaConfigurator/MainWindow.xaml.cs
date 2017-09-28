@@ -333,7 +333,7 @@ namespace AlphaConfigurator
 
         private void loadTrackBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists(saveLoadFileName.Text))
+            if (!File.Exists(saveLoadTrackName.Text))
             {
                 MessageBox.Show("File named '" + saveLoadTrackName.Text + "' does not exist!");
                 return;
@@ -367,6 +367,58 @@ namespace AlphaConfigurator
             var text = "Yaw  Pitch  Roll  Time" + Environment.NewLine; 
             text += selectedItem.GetPrettyMovementsText();
             selectedInfo.Text = text;
+        }
+
+        private void upBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var savedSel = maneuverTrackList.SelectedIndex;
+            var happened = false;
+            var manRef = (sender as Button)?.DataContext as ManeuverReference;
+            var canChangeSel = false;
+            if (manRef == maneuverTrackList.SelectedItem)
+                canChangeSel = true;
+            for (int i = 1; i < ManeuverTrack.Count; i++)
+            {
+                if (ManeuverTrack[i] == manRef)
+                {
+                    var old = ManeuverTrack[i - 1];
+                    ManeuverTrack[i - 1] = ManeuverTrack[i];
+                    ManeuverTrack[i] = old;
+                    happened = true;
+                    break;
+                }
+            }
+            if (happened)
+            {
+                try { if (canChangeSel) maneuverTrackList.SelectedIndex = savedSel - 1; } catch { }
+                tryRefresh();
+            }
+        }
+
+        private void downBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var savedSel = maneuverTrackList.SelectedIndex;
+            var happened = false;
+            var manRef = (sender as Button)?.DataContext as ManeuverReference;
+            var canChangeSel = false;
+            if (manRef == maneuverTrackList.SelectedItem)
+                canChangeSel = true;
+            for (int i = 0; i < ManeuverTrack.Count - 1; i++)
+            {
+                if (ManeuverTrack[i] == manRef)
+                {
+                    var old = ManeuverTrack[i + 1];
+                    ManeuverTrack[i + 1] = ManeuverTrack[i];
+                    ManeuverTrack[i] = old;
+                    happened = true;
+                    break;
+                }
+            }
+            if (happened)
+            {
+                try { if (canChangeSel) maneuverTrackList.SelectedIndex = savedSel + 1; } catch { }
+                tryRefresh();
+            }
         }
     }
 }
