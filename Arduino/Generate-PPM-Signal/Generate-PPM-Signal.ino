@@ -1,6 +1,7 @@
 //////////////////////CONFIGURATION///////////////////////////////
 #define chanel_number 4  //set the number of chanels
 #define default_servo_value 1500  //set the default servo value
+#define offset 20  //set offset from default servo value
 #define PPM_FrLen 22500  //set the PPM frame length in microseconds (1ms = 1000µs)
 #define PPM_PulseLen 300  //set the pulse length
 #define onState 1  //set polarity of the pulses: 1 is positive, 0 is negative
@@ -59,18 +60,18 @@ void loop(){
           current[i] = next[i];
       }
       
-      ppm[0] = current[0];
-      ppm[1] = current[1];
-      ppm[3] = current[2];
+      ppm[0] = current[0] + offset;
+      ppm[1] = current[1] + offset;
+      ppm[3] = current[2] + offset;
       
       for (int i=0; i<3; i++){
-        next[i] = default_servo_value;
+        next[i] = default_servo_value + offset;
       }
       next[3] = 10;
       nextIsAvailable = false;
     } else {
         for (int i = 0;i<4;i++){
-          ppm[i] = default_servo_value;
+          ppm[i] = default_servo_value + offset;
           }
       }
   }
